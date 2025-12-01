@@ -28,34 +28,43 @@ docker compose up -d
 ```
 
 ### 2. Проверка состояния
+
+```bash
 docker compose ps
+```
 
 Все контейнеры должны быть в статусе "Up".
 
-### 4. Доступ к сервисам
-PostgreSQL: localhost:5432
-База данных: myapp
-Пользователь: dbuser
-Пароль: SecurePassword123
-Grafana: http://localhost:3000
-Логин: admin
-Пароль: admin
-Prometheus: http://localhost:9090
-postgres_exporter метрики: http://localhost:9187/metrics
+### 3. Доступ к сервисам
 
+| Сервис | Адрес | Учетные данные |
+|--------|-------|----------------|
+| **PostgreSQL** | `localhost:5432` | База: `myapp`<br>Пользователь: `dbuser`<br>Пароль: `SecurePassword123` |
+| **Grafana** | http://localhost:3000 | Логин: `admin`<br>Пароль: `admin` |
+| **Prometheus** | http://localhost:9090 | - |
+| **postgres_exporter** | http://localhost:9187/metrics | - |
 
-### Подключение к PostgreSQL
-Через psql в Docker
+## Подключение к PostgreSQL
+
+### Через psql в Docker
+
+```bash
 docker exec -it postgres-dev psql -U dbuser -d myapp
+```
 
-Через DBeaver
-Создать новое подключение PostgreSQL
-Host: localhost, Port: 5432
+### Через DBeaver
 
-Database: myapp
-Username: dbuser, Password: SecurePassword123
+1. Создать новое подключение PostgreSQL
+2. Параметры:
+   - **Host:** `localhost`
+   - **Port:** `5432`
+   - **Database:** `myapp`
+   - **Username:** `dbuser`
+   - **Password:** `SecurePassword123`
 
-### Структура проекта
+## Структура проекта
+
+```
 infrastructure/
 ├── postgres/
 │   ├── docker-compose.yml      # Оркестрация всех сервисов
@@ -66,30 +75,40 @@ infrastructure/
 ├── monitoring/
 │   └── prometheus.yml          # Конфигурация Prometheus
 └── README.md                   # Эта документация
+```
 
-### Настройки PostgreSQL
-Память
-shared_buffers = 512MB - общий буфер (25% RAM)
-work_mem = 16MB - память на операцию
-effective_cache_size = 2GB - подсказка оптимизатору
-WAL
-wal_level = replica - для репликации
-max_wal_size = 1GB - размер до checkpoint
-checkpoint_timeout = 5min - интервал checkpoint
-Подключения
-max_connections = 100 - максимум одновременных подключений
-Мониторинг в Grafana
-Импортированный dashboard: 9628 (PostgreSQL Database)
+## Настройки PostgreSQL
 
-Ключевые метрики:
-- TPS (Transactions Per Second) - транзакции в секунду
-- Active Connections - активные подключения
-- Cache Hit Ratio - процент попаданий в кэш (цель >95%)
-- Database Size - размер базы данных
-- Query Duration - длительность запросов
-Проверка pg_stat_statements
+### Память
+- `shared_buffers = 512MB` - общий буфер (25% RAM)
+- `work_mem = 16MB` - память на операцию
+- `effective_cache_size = 2GB` - подсказка оптимизатору
+
+### WAL
+- `wal_level = replica` - для репликации
+- `max_wal_size = 1GB` - размер до checkpoint
+- `checkpoint_timeout = 5min` - интервал checkpoint
+
+### Подключения
+- `max_connections = 100` - максимум одновременных подключений
+
+## Мониторинг в Grafana
+
+### Импортированный dashboard
+- **ID:** 9628 (PostgreSQL Database)
+
+### Ключевые метрики
+- **TPS (Transactions Per Second)** - транзакции в секунду
+- **Active Connections** - активные подключения
+- **Cache Hit Ratio** - процент попаданий в кэш (цель >95%)
+- **Database Size** - размер базы данных
+- **Query Duration** - длительность запросов
+
+## Проверка pg_stat_statements
 
 Подключиться к PostgreSQL и выполнить:
+
+```sql
 -- Топ-10 медленных запросов
 SELECT 
   substring(query, 1, 50) AS query,
@@ -99,3 +118,4 @@ SELECT
 FROM pg_stat_statements
 ORDER BY total_exec_time DESC
 LIMIT 10;
+```
