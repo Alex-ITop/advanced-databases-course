@@ -25,11 +25,14 @@
 ```bash
 cd infrastructure/postgres
 docker compose up -d
+```
 
-2. Проверка состояния
+### 2. Проверка состояния
 docker compose ps
+
 Все контейнеры должны быть в статусе "Up".
-3. Доступ к сервисам
+
+### 4. Доступ к сервисам
 PostgreSQL: localhost:5432
 База данных: myapp
 Пользователь: dbuser
@@ -41,15 +44,18 @@ Prometheus: http://localhost:9090
 postgres_exporter метрики: http://localhost:9187/metrics
 
 
-Подключение к PostgreSQL
+### Подключение к PostgreSQL
 Через psql в Docker
 docker exec -it postgres-dev psql -U dbuser -d myapp
+
 Через DBeaver
 Создать новое подключение PostgreSQL
 Host: localhost, Port: 5432
+
 Database: myapp
 Username: dbuser, Password: SecurePassword123
-Структура проекта
+
+### Структура проекта
 infrastructure/
 ├── postgres/
 │   ├── docker-compose.yml      # Оркестрация всех сервисов
@@ -60,7 +66,8 @@ infrastructure/
 ├── monitoring/
 │   └── prometheus.yml          # Конфигурация Prometheus
 └── README.md                   # Эта документация
-Настройки PostgreSQL
+
+### Настройки PostgreSQL
 Память
 shared_buffers = 512MB - общий буфер (25% RAM)
 work_mem = 16MB - память на операцию
@@ -73,6 +80,7 @@ checkpoint_timeout = 5min - интервал checkpoint
 max_connections = 100 - максимум одновременных подключений
 Мониторинг в Grafana
 Импортированный dashboard: 9628 (PostgreSQL Database)
+
 Ключевые метрики:
 - TPS (Transactions Per Second) - транзакции в секунду
 - Active Connections - активные подключения
@@ -80,6 +88,7 @@ max_connections = 100 - максимум одновременных подклю
 - Database Size - размер базы данных
 - Query Duration - длительность запросов
 Проверка pg_stat_statements
+
 Подключиться к PostgreSQL и выполнить:
 -- Топ-10 медленных запросов
 SELECT 
